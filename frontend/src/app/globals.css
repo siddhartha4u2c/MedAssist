@@ -1,0 +1,314 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: light;
+}
+
+html.dark {
+  color-scheme: dark;
+}
+
+body {
+  @apply min-h-screen antialiased transition-colors duration-200;
+}
+
+/**
+ * Whole-app theming: `html.dark` flips everything inside `.medassist-app`.
+ * Placed after `@tailwind utilities` so these beat default light utilities.
+ */
+html.dark .medassist-app {
+  @apply bg-slate-950 text-slate-100;
+}
+
+/* Core surfaces — use raw colors where remaps target the same utility name (Tailwind circular @apply). */
+html.dark .medassist-app .bg-white:not([data-app-theme-control]) {
+  background-color: rgb(15 23 42); /* slate-900 */
+  color: rgb(241 245 249); /* slate-100 */
+}
+
+html.dark .medassist-app .bg-slate-50 {
+  @apply bg-slate-950 text-slate-100;
+}
+
+html.dark .medassist-app .bg-slate-100 {
+  background-color: rgb(30 41 59); /* slate-800 */
+  color: rgb(241 245 249); /* slate-100 */
+}
+
+/* Translucent / tinted panels */
+html.dark .medassist-app .bg-slate-50\/80,
+html.dark .medassist-app .bg-slate-50\/90 {
+  @apply bg-slate-950/95 text-slate-100;
+}
+
+html.dark .medassist-app .bg-slate-50\/50 {
+  background-color: rgb(15 23 42 / 0.8); /* slate-900/80 */
+  color: rgb(241 245 249);
+}
+
+html.dark .medassist-app .bg-black\/40 {
+  @apply bg-black/70;
+}
+
+/* Clinical highlights */
+html.dark .medassist-app .bg-clinical-50 {
+  @apply bg-sky-950/50 text-slate-100;
+}
+
+html.dark .medassist-app .text-clinical-900 {
+  @apply text-sky-100;
+}
+
+html.dark .medassist-app .text-clinical-800 {
+  @apply text-sky-200;
+}
+
+html.dark .medassist-app .text-clinical-700 {
+  @apply text-sky-300;
+}
+
+/* Body text scale — raw colors only (mutual @apply text-slate-500/400 causes circular dependency). */
+html.dark .medassist-app .text-slate-900,
+html.dark .medassist-app .text-slate-800 {
+  color: rgb(241 245 249);
+}
+
+html.dark .medassist-app .text-slate-700 {
+  color: rgb(226 232 240);
+}
+
+html.dark .medassist-app .text-slate-600 {
+  color: rgb(203 213 225);
+}
+
+html.dark .medassist-app .text-slate-500 {
+  color: rgb(148 163 184);
+}
+
+html.dark .medassist-app .text-slate-400 {
+  color: rgb(100 116 139);
+}
+
+/* Borders & dividers */
+html.dark .medassist-app .border-slate-100 {
+  @apply border-slate-700;
+}
+
+html.dark .medassist-app .border-slate-200 {
+  @apply border-slate-700;
+}
+
+html.dark .medassist-app .border-slate-300 {
+  @apply border-slate-600;
+}
+
+html.dark .medassist-app .border-slate-100\/80 {
+  @apply border-slate-700;
+}
+
+html.dark .medassist-app .divide-slate-100 > :not([hidden]) ~ :not([hidden]) {
+  border-color: rgb(51 65 85);
+}
+
+html.dark .medassist-app .ring-clinical-200 {
+  @apply ring-slate-600;
+}
+
+html.dark .medassist-app .ring-clinical-600 {
+  @apply ring-sky-500;
+}
+
+/* Status / alert panels */
+html.dark .medassist-app .bg-red-50 {
+  @apply bg-red-950/55 text-red-100;
+}
+
+html.dark .medassist-app .bg-red-50\/90 {
+  @apply bg-red-950/55 text-red-100;
+}
+
+html.dark .medassist-app .border-red-200 {
+  @apply border-red-900;
+}
+
+html.dark .medassist-app .border-red-400 {
+  @apply border-red-700;
+}
+
+html.dark .medassist-app .text-red-800 {
+  @apply text-red-200;
+}
+
+html.dark .medassist-app .text-red-900 {
+  @apply text-red-100;
+}
+
+html.dark .medassist-app .bg-red-950\/30 {
+  @apply bg-red-950/50 text-red-100;
+}
+
+html.dark .medassist-app .bg-red-50\/50 {
+  @apply bg-red-950/45 text-red-100;
+}
+
+html.dark .medassist-app .text-red-700 {
+  @apply text-red-300;
+}
+
+html.dark .medassist-app .text-red-800\/95 {
+  @apply text-red-200/95;
+}
+
+html.dark .medassist-app .placeholder\:text-slate-400::placeholder {
+  color: rgb(100 116 139);
+}
+
+html.dark .medassist-app .placeholder\:text-red-400::placeholder {
+  color: rgb(252 165 165);
+}
+
+html.dark .medassist-app .bg-clinical-50\/80 {
+  @apply bg-sky-950/45 text-slate-100;
+}
+
+html.dark .medassist-app .border-clinical-600 {
+  @apply border-sky-500;
+}
+
+html.dark .medassist-app .bg-emerald-600\/10 {
+  @apply bg-emerald-950/35;
+}
+
+html.dark .medassist-app .bg-amber-100 {
+  @apply bg-amber-900/55 text-amber-50;
+}
+
+html.dark .medassist-app .bg-amber-50 {
+  @apply bg-amber-950/50 text-amber-100;
+}
+
+html.dark .medassist-app .border-amber-200 {
+  @apply border-amber-900;
+}
+
+html.dark .medassist-app .text-amber-800 {
+  @apply text-amber-200;
+}
+
+html.dark .medassist-app .text-amber-900 {
+  @apply text-amber-100;
+}
+
+html.dark .medassist-app .text-amber-950 {
+  @apply text-amber-50;
+}
+
+html.dark .medassist-app .from-emerald-50 {
+  --tw-gradient-from: rgb(6 78 59 / 0.35) var(--tw-gradient-from-position);
+}
+
+html.dark .medassist-app .bg-emerald-50\/80 {
+  @apply border border-emerald-900/40 bg-emerald-950/40 text-emerald-50;
+}
+
+html.dark .medassist-app .to-white {
+  --tw-gradient-to: rgb(15 23 42) var(--tw-gradient-to-position);
+}
+
+html.dark .medassist-app .border-emerald-100 {
+  @apply border-emerald-900/60;
+}
+
+html.dark .medassist-app .border-emerald-200\/80 {
+  @apply border-emerald-900/60;
+}
+
+html.dark .medassist-app .text-emerald-800 {
+  @apply text-emerald-200;
+}
+
+/* Primary buttons stay on-brand */
+html.dark .medassist-app .bg-clinical-600 {
+  @apply bg-sky-600 text-white;
+}
+
+html.dark .medassist-app .hover\:bg-clinical-900:hover {
+  @apply bg-sky-800;
+}
+
+html.dark .medassist-app .hover\:bg-clinical-800:hover {
+  @apply bg-sky-700;
+}
+
+/* Neutral hovers */
+html.dark .medassist-app .hover\:bg-slate-50:hover {
+  background-color: rgb(30 41 59); /* slate-800 */
+}
+
+html.dark .medassist-app .hover\:bg-slate-100:hover {
+  background-color: rgb(51 65 85); /* slate-700 */
+}
+
+html.dark .medassist-app .hover\:bg-white:hover {
+  background-color: rgb(30 41 59); /* slate-800 */
+}
+
+html.dark .medassist-app .hover\:text-slate-900:hover {
+  @apply text-slate-100;
+}
+
+html.dark .medassist-app .hover\:text-white:hover {
+  @apply text-white;
+}
+
+html.dark .medassist-app .hover\:text-clinical-900:hover {
+  @apply text-sky-100;
+}
+
+html.dark .medassist-app .hover\:border-slate-300:hover {
+  @apply border-slate-500;
+}
+
+/* Theme toggle control */
+html.dark .medassist-app [data-app-theme-control] {
+  border-color: rgb(100 116 139); /* slate-500 */
+  background-color: rgb(30 41 59); /* slate-800 */
+  color: rgb(253 230 138); /* amber-200 */
+  box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+}
+
+html.dark .medassist-app [data-app-theme-control]:hover {
+  background-color: rgb(51 65 85); /* slate-700 */
+  color: rgb(255 251 235); /* amber-50 */
+}
+
+/* File input button (clinical) inside dark cards */
+html.dark .medassist-app .file\:bg-clinical-600 {
+  @apply bg-sky-600;
+}
+
+html.dark .medassist-app .hover\:file\:bg-clinical-900:hover {
+  @apply bg-sky-800;
+}
+
+/* Landing page: single-slide image fade when slide changes */
+@keyframes home-slide-fade {
+  from {
+    opacity: 0.35;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.home-slide-image {
+  animation: home-slide-fade 0.55s ease-out;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .home-slide-image {
+    animation: none;
+  }
+}
