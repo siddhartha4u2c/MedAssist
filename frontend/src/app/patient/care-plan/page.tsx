@@ -8,6 +8,12 @@ import { getStoredAccessToken } from "@/lib/auth-storage";
 type Assigned = { id: string; displayName: string; email: string } | null;
 type CarePlanItem = { id: string; planText: string; source: string; createdAt: string };
 
+function apiUrl(path: string): string {
+  const base = (process.env.NEXT_PUBLIC_API_URL || "").trim().replace(/\/$/, "");
+  if (!base) return `/api/v1/${path.replace(/^\/+/, "")}`;
+  return `${base}/${path.replace(/^\/+/, "")}`;
+}
+
 function fmtDateTime(iso: string): string {
   const d = new Date(iso);
   if (!Number.isFinite(d.getTime())) return "";
@@ -31,7 +37,7 @@ export default function PatientCarePlanPage() {
         return;
       }
       try {
-        const res = await fetch("/api/v1/patient/profile", {
+        const res = await fetch(apiUrl("patient/profile"), {
           headers: { Authorization: `Bearer ${token}` },
           cache: "no-store",
         });

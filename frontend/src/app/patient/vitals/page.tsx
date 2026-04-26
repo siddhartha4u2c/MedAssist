@@ -44,6 +44,12 @@ const EMPTY_FORM: FormState = {
   notes: "",
 };
 
+function apiUrl(path: string): string {
+  const base = (process.env.NEXT_PUBLIC_API_URL || "").trim().replace(/\/$/, "");
+  if (!base) return `/api/v1/${path.replace(/^\/+/, "")}`;
+  return `${base}/${path.replace(/^\/+/, "")}`;
+}
+
 function formatRecordedAt(iso: string): string {
   if (!iso) return "—";
   const d = new Date(iso);
@@ -79,7 +85,7 @@ export default function PatientVitalsPage() {
     setLoadingList(true);
     setError("");
     try {
-      const res = await fetch("/api/v1/patient/vitals", {
+      const res = await fetch(apiUrl("patient/vitals"), {
         method: "GET",
         headers: { Authorization: `Bearer ${token}` },
         cache: "no-store",
@@ -124,7 +130,7 @@ export default function PatientVitalsPage() {
       weightKg: numOrEmpty(form.weightKg),
       notes: form.notes.trim(),
     };
-    fetch("/api/v1/patient/vitals", {
+    fetch(apiUrl("patient/vitals"), {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

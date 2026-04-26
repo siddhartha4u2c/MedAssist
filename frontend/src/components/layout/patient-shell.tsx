@@ -31,6 +31,12 @@ const PATIENT_NAV = [
 
 type AssignedDoctorChip = { displayName: string; email?: string };
 
+function apiUrl(path: string): string {
+  const base = (process.env.NEXT_PUBLIC_API_URL || "").trim().replace(/\/$/, "");
+  if (!base) return `/api/v1/${path.replace(/^\/+/, "")}`;
+  return `${base}/${path.replace(/^\/+/, "")}`;
+}
+
 function formatNotifWhen(iso: string): string {
   if (!iso) return "—";
   const d = new Date(iso);
@@ -107,7 +113,7 @@ export function PatientShell({ children }: { children: React.ReactNode }) {
     let cancelled = false;
     (async () => {
       try {
-        const res = await fetch("/api/v1/patient/profile", {
+        const res = await fetch(apiUrl("patient/profile"), {
           headers: { Authorization: `Bearer ${token}` },
           cache: "no-store",
         });

@@ -12,6 +12,12 @@ import {
 
 type ProfileRecord = Record<string, unknown>;
 
+function apiUrl(path: string): string {
+  const base = (process.env.NEXT_PUBLIC_API_URL || "").trim().replace(/\/$/, "");
+  if (!base) return `/api/v1/${path.replace(/^\/+/, "")}`;
+  return `${base}/${path.replace(/^\/+/, "")}`;
+}
+
 export default function PatientMedicationsPage() {
   const [profileBase, setProfileBase] = useState<ProfileRecord | null>(null);
   const [rawMedications, setRawMedications] = useState("");
@@ -32,7 +38,7 @@ export default function PatientMedicationsPage() {
     setError("");
     setLoading(true);
     try {
-      const res = await fetch("/api/v1/patient/profile", {
+      const res = await fetch(apiUrl("patient/profile"), {
         headers: { Authorization: `Bearer ${token}` },
         cache: "no-store",
       });
