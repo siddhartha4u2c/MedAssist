@@ -24,6 +24,40 @@ function bubbleClass(role: "user" | "assistant"): string {
   return "mr-auto max-w-[85%] rounded-2xl rounded-bl-md border border-slate-200 bg-white px-4 py-2.5 text-sm text-slate-800 shadow-sm";
 }
 
+const DANGER_SIGNAL_PHRASES = [
+  "chest pain",
+  "shortness of breath",
+  "difficulty breathing",
+  "can't breathe",
+  "cannot breathe",
+  "stroke",
+  "facial droop",
+  "slurred speech",
+  "passed out",
+  "unconscious",
+  "severe bleeding",
+  "vomiting blood",
+  "blood in vomit",
+  "coughing blood",
+  "seizure",
+  "anaphylaxis",
+  "suicidal",
+  "kill myself",
+  "worst headache",
+];
+
+function hasDangerSignals(messages: SymptomChatMessage[]): boolean {
+  const userBlob = messages
+    .filter((m) => m.role === "user")
+    .map((m) => m.content.toLowerCase())
+    .join(" ");
+  if (!userBlob) return false;
+  if (DANGER_SIGNAL_PHRASES.some((p) => userBlob.includes(p))) return true;
+  // High fever thresholds that may justify urgent escalation.
+  if (/\b(104|105)\s?f\b/.test(userBlob) || /\b(40|41)\s?c\b/.test(userBlob)) return true;
+  return false;
+}
+
 function isCriticalUrgency(a: SymptomAssessment): boolean {
   const L = (a.urgencyLevel || "").toLowerCase();
   return L === "emergency" || L === "very_urgent";
@@ -64,6 +98,7 @@ export function SymptomChat() {
   const flushLockRef = useRef(false);
   /** Avoid flushing on React Strict Mode’s immediate dev unmount (session stays in sessionStorage). */
   const allowUnmountFlushRef = useRef(false);
+  const [lastDangerSignal, setLastDangerSignal] = useState(false);
 
   useEffect(() => {
     messagesRef.current = messages;
@@ -195,9 +230,11 @@ export function SymptomChat() {
     try {
       const { reply, assessment } = await symptomChat(nextThread);
       const trimmed = (reply || "").trim();
+      const danger = hasDangerSignals(nextThread);
+      setLastDangerSignal(danger);
       setLatestAssessment(assessment);
       setDismissedSeverityKey(null);
-      if (isCriticalUrgency(assessment)) {
+      if (isCriticalUrgency(assessment) && danger) {
         setUrgentModalOpen(true);
       }
       setMessages((prev) => [
@@ -224,6 +261,7 @@ export function SymptomChat() {
   const showSeverityAlert =
     latestAssessment !== null &&
     severityAlertKey !== null &&
+    lastDangerSignal &&
     isHighUrgencyBanner(latestAssessment) &&
     severityAlertKey !== dismissedSeverityKey;
 
