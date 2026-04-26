@@ -3,6 +3,7 @@
 // Proxying uses app/api/v1/[...path]/route.ts and auth routes with BACKEND_URL at request time.
 const nextConfig = {
   reactStrictMode: true,
+  // Keep identifier updated to force fresh frontend deployment when needed.
 };
 
 export default nextConfig;
