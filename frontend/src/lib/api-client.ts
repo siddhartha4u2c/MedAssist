@@ -20,10 +20,13 @@ function normalizePublicApiBase(raw: string): string {
 }
 
 /**
- * Auth endpoints always use this prefix (never `base()`), so a bad `NEXT_PUBLIC_API_URL`
- * cannot turn `/auth/forgot-password` into `/api/v1/api/v1/...` or skip `/api/v1` → NOT_FOUND.
+ * Auth endpoint base.
+ * Defaults to same-origin `/api/v1` proxy, but honors NEXT_PUBLIC_API_URL when provided
+ * so production can call backend directly if proxy routes are unavailable.
  */
-const AUTH_API = "/api/v1";
+function authBase(): string {
+  return base();
+}
 
 /**
  * API base path without trailing slash (must match Flask `/api/v1` prefix).
@@ -225,7 +228,7 @@ export async function authRegister(body: {
   password_confirm: string;
   role: UserRole;
 }): Promise<RegisterSuccess> {
-  const res = await fetch(`${AUTH_API}/auth/register`, {
+  const res = await fetch(`${authBase()}/auth/register`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(body),
@@ -237,7 +240,7 @@ export async function authRejectRegistration(body: {
   token: string;
   reason?: string;
 }): Promise<{ message: string }> {
-  const res = await fetch(`${AUTH_API}/auth/reject-registration`, {
+  const res = await fetch(`${authBase()}/auth/reject-registration`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(body),
@@ -250,7 +253,7 @@ export async function authVerifyEmail(token: string): Promise<{ message: string 
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), VERIFY_TIMEOUT_MS);
   try {
-    const res = await fetch(`${AUTH_API}/auth/verify-email?${q.toString()}`, {
+    const res = await fetch(`${authBase()}/auth/verify-email?${q.toString()}`, {
       method: "GET",
       cache: "no-store",
       signal: controller.signal,
@@ -282,7 +285,7 @@ export async function authLogin(
   token_type: string;
   user: { id: string; email: string; role: string };
 }> {
-  const res = await fetch(`${AUTH_API}/auth/login`, {
+  const res = await fetch(`${authBase()}/auth/login`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ email, password, role }),
@@ -291,7 +294,7 @@ export async function authLogin(
 }
 
 export async function authForgotPassword(email: string): Promise<{ message: string }> {
-  const res = await fetch(`${AUTH_API}/auth/forgot-password`, {
+  const res = await fetch(`${authBase()}/auth/forgot-password`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ email }),
@@ -304,7 +307,7 @@ export async function authResendVerification(email: string): Promise<{
   message: string;
   email_delivery?: "smtp" | "console";
 }> {
-  const res = await fetch(`${AUTH_API}/auth/resend-verification`, {
+  const res = await fetch(`${authBase()}/auth/resend-verification`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ email }),
@@ -317,7 +320,7 @@ export async function authResetPassword(body: {
   password: string;
   password_confirm: string;
 }): Promise<{ message: string }> {
-  const res = await fetch(`${AUTH_API}/auth/reset-password`, {
+  const res = await fetch(`${authBase()}/auth/reset-password`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(body),
