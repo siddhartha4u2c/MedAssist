@@ -58,6 +58,12 @@ const INITIAL_STATE: ProfileFormState = {
 
 const MAX_PHOTO_BYTES = 5 * 1024 * 1024;
 
+function profileApiUrl(): string {
+  const raw = (process.env.NEXT_PUBLIC_API_URL || "").trim().replace(/\/$/, "");
+  if (!raw) return "/api/v1/patient/profile";
+  return `${raw}/patient/profile`;
+}
+
 export default function PatientProfilePage() {
   const router = useRouter();
   const [form, setForm] = useState<ProfileFormState>(INITIAL_STATE);
@@ -79,7 +85,7 @@ export default function PatientProfilePage() {
         return;
       }
       try {
-        const res = await fetch("/api/v1/patient/profile", {
+        const res = await fetch(profileApiUrl(), {
           method: "GET",
           headers: { Authorization: `Bearer ${token}` },
           cache: "no-store",
@@ -147,7 +153,7 @@ export default function PatientProfilePage() {
       return;
     }
     setLoading(true);
-    fetch("/api/v1/patient/profile", {
+    fetch(profileApiUrl(), {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
