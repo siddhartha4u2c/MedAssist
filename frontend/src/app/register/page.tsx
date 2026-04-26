@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import { useState } from "react";
+import { Suspense, useState } from "react";
 import { AuthMarketingAside } from "@/components/landing/auth-marketing-aside";
 import {
   authRegister,
@@ -29,7 +29,7 @@ function inputClass(invalid: boolean): string {
   ].join(" ");
 }
 
-export default function RegisterPage() {
+function RegisterPageContent() {
   const searchParams = useSearchParams();
   const queryRole = (searchParams.get("role") || "").toLowerCase();
   const initialRole: UserRole = queryRole === "doctor" ? "doctor" : "patient";
@@ -498,5 +498,19 @@ export default function RegisterPage() {
         </div>
       </div>
     </>
+  );
+}
+
+export default function RegisterPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="flex min-h-screen items-center justify-center bg-slate-100 text-sm text-slate-600 dark:bg-slate-950 dark:text-slate-400">
+          Loading…
+        </div>
+      }
+    >
+      <RegisterPageContent />
+    </Suspense>
   );
 }
