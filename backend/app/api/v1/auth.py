@@ -36,6 +36,33 @@ def _cfg() -> Config:
     return current_app.config["MEDASSIST_CONFIG"]
 
 
+def _frontend_base_url(cfg: Config) -> str:
+    """
+    Resolve frontend base URL for links in emails.
+    If FRONTEND_PUBLIC_URL is left as localhost in production, fall back to request Origin/Host.
+    """
+    base = (cfg.frontend_public_url or "").strip().rstrip("/")
+    base_lo = base.lower()
+    if base and not (
+        base_lo.startswith("http://localhost")
+        or base_lo.startswith("https://localhost")
+        or base_lo.startswith("http://127.0.0.1")
+        or base_lo.startswith("https://127.0.0.1")
+    ):
+        return base
+
+    origin = (request.headers.get("Origin") or "").strip().rstrip("/")
+    if origin.startswith(("http://", "https://")):
+        return origin
+
+    host = (request.headers.get("X-Forwarded-Host") or request.host or "").strip()
+    proto = (request.headers.get("X-Forwarded-Proto") or request.scheme or "https").strip()
+    if host:
+        return f"{proto}://{host}".rstrip("/")
+
+    return base or "http://localhost:3000"
+
+
 def _normalize_email(raw: str) -> str:
     return normalize_email_address(raw)
 
@@ -88,7 +115,7 @@ def _ensure_admin_user() -> None:
 def _send_admin_approval_email(
     cfg: Config, *, user_email: str, first_name: str, last_name: str, role: str, token: str
 ) -> None:
-    base = cfg.frontend_public_url.rstrip("/")
+    base = _frontend_base_url(cfg)
     token_q = quote(token, safe="")
     approve_url = f"{base}/verify-email?token={token_q}"
     reject_url = f"{base}/reject-registration?token={token_q}"
@@ -135,7 +162,7 @@ def _send_admin_approval_email(
 
 def _send_user_approved_email(cfg: Config, *, to_email: str, first_name: str) -> None:
     subject = "Your MedAssist account is now active"
-    login_url = f"{cfg.frontend_public_url.rstrip('/')}/login"
+    login_url = f"{_frontend_base_url(cfg)}/login"
     safe_login_href = html.escape(login_url, quote=True)
     body = (
         f"Hi {first_name},\n\n"
@@ -158,7 +185,7 @@ def _send_user_rejection_email(
     cfg: Config, *, to_email: str, first_name: str, reason: str
 ) -> None:
     subject = "MedAssist registration was not approved"
-    register_url = f"{cfg.frontend_public_url.rstrip('/')}/register"
+    register_url = f"{_frontend_base_url(cfg)}/register"
     safe_register_href = html.escape(register_url, quote=True)
     reason_text = reason.strip() if reason.strip() else "No reason was provided."
     safe_reason = html.escape(reason_text)
@@ -747,7 +774,7 @@ def forgot_password():
     db.session.commit()
 
     cfg = _cfg()
-    link = f"{cfg.frontend_public_url}/reset-password?token={token}"
+    link = f"{_frontend_base_url(cfg)}/reset-password?token={token}"
     subject = "Reset your MedAssist password"
     body = (
         f"We received a password reset request.\n\n"

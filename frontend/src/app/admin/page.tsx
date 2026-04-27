@@ -46,6 +46,12 @@ const TABS: { id: AdminTabId; label: string }[] = [
   { id: "users", label: "User management" },
 ];
 
+function apiUrl(path: string): string {
+  const base = (process.env.NEXT_PUBLIC_API_URL || "").trim().replace(/\/$/, "");
+  if (!base) return `/api/v1/${path.replace(/^\/+/, "")}`;
+  return `${base}/${path.replace(/^\/+/, "")}`;
+}
+
 function parseTab(raw: string | null): AdminTabId {
   if (
     raw === "leads" ||
@@ -288,7 +294,7 @@ function AdminDashboardInner() {
       return;
     }
     let cancelled = false;
-    fetch("/api/v1/admin/leads", {
+    fetch(apiUrl("admin/leads"), {
       headers: { Authorization: `Bearer ${token}` },
       cache: "no-store",
     })
